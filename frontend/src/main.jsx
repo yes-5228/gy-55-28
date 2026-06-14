@@ -9,6 +9,7 @@ import PickupPage from "./pages/PickupPage.jsx";
 import LockerMonitorPage from "./pages/LockerMonitorPage.jsx";
 import ReturnPage from "./pages/ReturnPage.jsx";
 import NotificationsPage from "./pages/NotificationsPage.jsx";
+import HandoverPage from "./pages/HandoverPage.jsx";
 import "./styles/global.css";
 
 const router = createBrowserRouter([
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "lockers", element: <LockerMonitorPage /> },
       { path: "returns", element: <ReturnPage /> },
       { path: "notifications", element: <NotificationsPage /> },
+      { path: "handover", element: <HandoverPage /> },
     ],
   },
 ]);

@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "apps.notifications",
     "apps.parcels",
     "apps.returns",
+    "apps.handovers",
 ]
 
 MIDDLEWARE = [

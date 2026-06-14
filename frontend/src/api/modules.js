@@ -10,7 +10,8 @@ export const lockersApi = {
 export const parcelsApi = {
   list: () => api.get("/parcels/"),
   inbound: (payload) => api.post("/parcels/inbound/", payload),
-  open: (pickupCode) => api.post("/parcels/open/", { pickup_code: pickupCode }),
+  open: (pickupCode, operator) => api.post("/parcels/open/", { pickup_code: pickupCode, operator }),
+  reportException: (payload) => api.post("/parcels/report_exception/", payload),
 };
 
 export const notificationsApi = {
@@ -21,4 +22,11 @@ export const returnsApi = {
   list: () => api.get("/returns/"),
   create: (payload) => api.post("/returns/", payload),
   complete: (id) => api.post(`/returns/${id}/complete/`, {}),
+};
+
+export const handoversApi = {
+  listShifts: () => api.get("/handovers/shifts/"),
+  createShift: (payload) => api.post("/handovers/shifts/", payload),
+  getStats: (params) => api.get("/handovers/shifts/stats/", { params }),
+  listExceptions: () => api.get("/handovers/exceptions/"),
 };

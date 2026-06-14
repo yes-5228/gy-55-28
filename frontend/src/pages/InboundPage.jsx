@@ -14,6 +14,7 @@ const initialForm = {
   receiver_phone: "",
   carrier: "顺丰",
   size: "medium",
+  operator: "管理员",
   note: "",
 };
 
@@ -66,6 +67,7 @@ export default function InboundPage() {
               <option value="large">大</option>
             </select>
           </label>
+          <label>操作员<input name="operator" value={form.operator} onChange={updateField} required /></label>
           <label>备注<input name="note" value={form.note} onChange={updateField} /></label>
           <button type="submit"><PackagePlus size={18} />确认入库</button>
           <MessageBox type="success">{message}</MessageBox>

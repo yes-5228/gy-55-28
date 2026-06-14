@@ -5,6 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
+from apps.handovers.models import PickupException
 from apps.lockers.models import LockerCell
 from apps.notifications.services import send_pickup_notification
 from .models import Parcel
@@ -23,6 +24,7 @@ def generate_pickup_code():
 @transaction.atomic
 def inbound_parcel(validated_data):
     size = validated_data.pop("size", None)
+    operator = validated_data.pop("operator", "系统")
     cells = LockerCell.objects.select_for_update().filter(status=LockerCell.Status.EMPTY)
     if size:
         cells = cells.filter(size=size)
@@ -37,6 +39,7 @@ def inbound_parcel(validated_data):
         **validated_data,
         locker_cell=cell,
         pickup_code=generate_pickup_code(),
+        stored_by=operator,
     )
     cell.status = LockerCell.Status.OCCUPIED
     cell.save(update_fields=["status", "updated_at"])
@@ -45,7 +48,7 @@ def inbound_parcel(validated_data):
 
 
 @transaction.atomic
-def open_by_pickup_code(pickup_code):
+def open_by_pickup_code(pickup_code, operator="系统"):
     parcel = (
         Parcel.objects.select_for_update()
         .select_related("locker_cell")
@@ -58,10 +61,21 @@ def open_by_pickup_code(pickup_code):
     now = timezone.now()
     parcel.status = Parcel.Status.PICKED_UP
     parcel.picked_up_at = now
-    parcel.save(update_fields=["status", "picked_up_at"])
+    parcel.picked_up_by = operator
+    parcel.save(update_fields=["status", "picked_up_at", "picked_up_by"])
 
     cell = parcel.locker_cell
     cell.status = LockerCell.Status.OPEN
     cell.last_opened_at = now
     cell.save(update_fields=["status", "last_opened_at", "updated_at"])
     return parcel
+
+
+def record_pickup_exception(pickup_code, exception_type, operator, description="", parcel_tracking_no=""):
+    return PickupException.objects.create(
+        parcel_tracking_no=parcel_tracking_no,
+        pickup_code=pickup_code,
+        exception_type=exception_type,
+        operator=operator,
+        description=description,
+    )

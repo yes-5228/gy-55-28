@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.handovers.models import PickupException
 from apps.lockers.models import LockerCell
 from apps.lockers.serializers import LockerCellSerializer
 from .models import Parcel
@@ -23,7 +24,9 @@ class ParcelSerializer(serializers.ModelSerializer):
             "pickup_code",
             "status",
             "status_label",
+            "stored_by",
             "stored_at",
+            "picked_up_by",
             "picked_up_at",
             "returned_at",
             "note",
@@ -38,11 +41,21 @@ class ParcelInboundSerializer(serializers.Serializer):
     receiver_phone = serializers.CharField(max_length=30)
     carrier = serializers.CharField(max_length=40)
     size = serializers.ChoiceField(choices=LockerCell.Size.choices, required=False)
+    operator = serializers.CharField(max_length=40, required=False)
     note = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
 
 class PickupCodeSerializer(serializers.Serializer):
     pickup_code = serializers.CharField(max_length=12)
+    operator = serializers.CharField(max_length=40, required=False)
+
+
+class PickupExceptionSerializer(serializers.Serializer):
+    pickup_code = serializers.CharField(max_length=12, required=False, allow_blank=True)
+    parcel_tracking_no = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    exception_type = serializers.ChoiceField(choices=PickupException.Type.choices)
+    operator = serializers.CharField(max_length=40)
+    description = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
 
 class PickupResultSerializer(serializers.Serializer):

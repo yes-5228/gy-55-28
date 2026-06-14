@@ -7,8 +7,9 @@ from .serializers import (
     ParcelInboundSerializer,
     ParcelSerializer,
     PickupCodeSerializer,
+    PickupExceptionSerializer,
 )
-from .services import inbound_parcel, open_by_pickup_code
+from .services import inbound_parcel, open_by_pickup_code, record_pickup_exception
 
 
 class ParcelViewSet(viewsets.ModelViewSet):
@@ -26,7 +27,8 @@ class ParcelViewSet(viewsets.ModelViewSet):
     def open(self, request):
         serializer = PickupCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        parcel = open_by_pickup_code(serializer.validated_data["pickup_code"])
+        operator = serializer.validated_data.get("operator", "系统")
+        parcel = open_by_pickup_code(serializer.validated_data["pickup_code"], operator=operator)
         if not parcel:
             return Response(
                 {"success": False, "message": "取件码无效或快件不可取。"},
@@ -38,4 +40,18 @@ class ParcelViewSet(viewsets.ModelViewSet):
                 "message": f"柜格 {parcel.locker_cell.code} 已开箱。",
                 "parcel": ParcelSerializer(parcel).data,
             }
+        )
+
+    @action(detail=False, methods=["post"])
+    def report_exception(self, request):
+        serializer = PickupExceptionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        exception = record_pickup_exception(**serializer.validated_data)
+        return Response(
+            {
+                "success": True,
+                "message": "异常已记录。",
+                "id": exception.id,
+            },
+            status=status.HTTP_201_CREATED,
         )

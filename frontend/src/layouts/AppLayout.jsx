@@ -1,4 +1,4 @@
-import { Bell, Boxes, ClipboardList, LayoutDashboard, PackagePlus, RotateCcw, ScanLine } from "lucide-react";
+import { ArrowLeftRight, Bell, Boxes, ClipboardList, LayoutDashboard, PackagePlus, RotateCcw, ScanLine } from "lucide-react";
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/lockers", label: "柜格监控", icon: Boxes },
   { to: "/returns", label: "退件处理", icon: RotateCcw },
   { to: "/notifications", label: "通知记录", icon: Bell },
+  { to: "/handover", label: "交接班统计", icon: ArrowLeftRight },
 ];
 
 export default function AppLayout() {

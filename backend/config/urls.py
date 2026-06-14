@@ -16,4 +16,5 @@ urlpatterns = [
     path("api/parcels/", include("apps.parcels.urls")),
     path("api/notifications/", include("apps.notifications.urls")),
     path("api/returns/", include("apps.returns.urls")),
+    path("api/handovers/", include("apps.handovers.urls")),
 ]
